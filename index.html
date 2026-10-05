@@ -1,0 +1,497 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Cas Velthuis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400&family=Inter+Tight:wght@600&display=swap" rel="stylesheet">
+<style>
+@property --z{syntax:"<number>";inherits:true;initial-value:1}
+:root{
+  color-scheme:dark;
+  --bg:#0b0b0b;--fg:#f1ece1;--acc:#ff4a1c;
+  --m:20px;--g:20px;
+  --col:calc((100vw - var(--m)*2 - var(--g)*9)/10);
+  --fs:12px;
+  --fm:clamp(18px,1.9vw,27px);
+  --fd:clamp(28px,3vw,42px);
+  --fl:clamp(30px,min(6.8vh,5.4vw),76px);
+  --fxl:clamp(46px,8.6vw,140px);
+  --fx:clamp(40px,4.8vw,72px);
+  --disp:"Inter Tight","Helvetica Neue",Arial,sans-serif;
+  --mono:"DM Mono",ui-monospace,Menlo,monospace;
+  --ease:cubic-bezier(.19,1,.22,1);
+  --vh:100vh;
+}
+@supports (height:100svh){:root{--vh:100svh}}
+@media (max-width:900px){:root{--col:calc((100vw - var(--m)*2 - var(--g)*3)/4);--fd:26px;--fl:30px;--fx:30px}}
+@media (max-width:420px){:root{--m:12px;--g:12px}}
+
+*{box-sizing:border-box;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent}
+html{scrollbar-width:none;background:var(--bg)}
+html::-webkit-scrollbar{display:none}
+body{margin:0;background:var(--bg);color:var(--fg);font:400 var(--fs)/1.3 var(--mono);letter-spacing:.03em;text-transform:uppercase;overflow-x:hidden}
+html.lock,html.lock body{height:var(--vh);overflow:hidden}
+h1,h2,h3,p,ul,ol,dl,dd{margin:0;padding:0;font:inherit}
+li{list-style:none}
+em,i{font-style:normal}
+a{color:inherit;text-decoration:none}
+button{font:inherit;letter-spacing:inherit;color:inherit;text-transform:inherit;text-align:left;background:none;border:0;padding:0;cursor:pointer}
+img{display:block;user-select:none;-webkit-user-drag:none}
+:focus-visible{outline:1px solid var(--acc);outline-offset:3px}
+.x{mix-blend-mode:difference;color:#f1ece1}
+.d{font:600 var(--fd)/.94 var(--disp);letter-spacing:-.01em}
+.xl{font:600 var(--fxl)/.86 var(--disp);letter-spacing:-.025em}
+/* underline grows on hover; nothing here clips or moves the link itself, so the hover can't flicker */
+.u{background:linear-gradient(currentColor,currentColor) 0 100%/0 1px no-repeat;transition:background-size .35s var(--ease)}
+@media (hover:hover){.u:hover{background-size:100% 1px}}
+
+/* cropped still: every source image is a 5:4 card with a 16:9 frame inside it */
+.m{position:absolute;inset:0;overflow:hidden;container-type:size;background:#161616}
+.m-s{position:absolute;left:50%;top:50%;width:calc(max(100cqw,177.78cqh)*1.012);height:calc(max(100cqh,56.25cqw)*1.012);transform:translate(-50%,-50%) translate(var(--px,0),var(--py,0)) scale(var(--z,1));overflow:hidden;will-change:transform}
+.m-s img{position:absolute;left:0;top:-11.73%;width:100%;height:auto}
+.local .m-s img{top:0}
+
+/* letterbox hover: bars slide in top and bottom while the frame pushes in */
+.lb::before,.lb::after{content:"";position:absolute;z-index:1;left:0;width:100%;height:11%;background:#0b0b0b;transition:transform .6s var(--ease)}
+.lb::before{top:0;transform:translateY(-101%)}
+.lb::after{bottom:0;transform:translateY(101%)}
+.lb .m-s{--z:1.2;transition:--z .9s var(--ease)}
+@media (hover:hover) and (pointer:fine){
+  .lb:hover::before,.lb:hover::after{transform:none}
+  .lb:hover .m-s{--z:1.32}
+}
+
+/* header */
+.hdr{position:fixed;z-index:40;top:0;left:0;width:100%;padding:var(--m);display:flex;gap:var(--g);align-items:flex-start;pointer-events:none;user-select:none}
+.hdr a{pointer-events:auto}
+.hdr-name{width:calc(var(--col)*2 + var(--g));flex-shrink:0}
+.hdr-nav{width:calc(var(--col)*3 + var(--g)*2);flex-shrink:0;display:flex;gap:1.8em}
+.hdr-nav a.on::before,.hdr-tc::before{content:"";display:inline-block;width:6px;height:6px;margin-right:.7em;border-radius:50%;background:var(--acc);vertical-align:1px}
+.hdr-tc{flex:1;font-variant-numeric:tabular-nums}
+
+/* cursor label */
+.cur{position:fixed;left:0;top:0;z-index:70;pointer-events:none;background:var(--fg);color:var(--bg);padding:5px 9px;white-space:nowrap;clip-path:inset(0 100% 0 0);transition:clip-path .3s var(--ease);will-change:transform}
+.cur.on{clip-path:inset(0)}
+@media (hover:none){.cur{display:none}}
+
+/* letterbox shutter: loader and page transition */
+.shut{position:fixed;inset:0;z-index:90;pointer-events:none}
+.shut i{position:absolute;left:0;width:100%;height:50.5%;background:#000;transform:scaleY(0);transition:transform .55s var(--ease)}
+.shut i:first-child{top:0;transform-origin:top}
+.shut i:last-of-type{bottom:0;transform-origin:bottom}
+.shut.cover i{transform:scaleY(1)}
+.shut p{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;gap:1.4em;opacity:0;transition:opacity .12s}
+.shut.cover p{opacity:1;transition:opacity .2s .3s}
+
+
+/* home: a fixed reel on the left and a looping, wheel-driven column of films sliding past on the right, above a band for the tagline */
+.home{height:var(--vh);display:flex;flex-direction:column;overflow:hidden}
+.home-top{position:relative;flex:1;min-height:0;overflow:hidden;background:#000}
+.hero{position:absolute;left:0;top:0;bottom:0;width:calc(var(--col)*6 + var(--g)*5.5 + var(--m))}
+.hero .m{visibility:hidden}
+.hero .m.on{visibility:visible}
+.hero-l{position:absolute;z-index:2;left:var(--m);bottom:var(--m)}
+.car{position:absolute;right:0;top:0;bottom:0;width:calc(var(--col)*4 + var(--g)*3.5 + var(--m));overflow:hidden;touch-action:none;cursor:pointer}
+.card{position:absolute;left:0;top:0;width:100%;overflow:hidden;will-change:transform;display:flex;align-items:center;justify-content:center}
+.card-t{position:relative;z-index:2;padding:0 var(--m);text-align:center;pointer-events:none}
+.card-t i{display:block;margin-bottom:10px}
+.home-desc{flex-shrink:0;display:flex;justify-content:space-between;align-items:flex-end;gap:var(--g);padding:var(--m)}
+.home-desc .row{display:flex;gap:2em;white-space:nowrap}
+
+/* stacked list, mobile home */
+.stack-card{position:relative;display:block;height:var(--vh)}
+.pin{position:fixed;left:5%;top:45%;width:90%;z-index:5;text-align:center;pointer-events:none}
+.home-desc.fixed{position:fixed;left:0;bottom:0;width:100%;z-index:5;padding-right:var(--m);pointer-events:none}
+
+/* shared page shell for index and info: the tile bounces behind type that inverts over it */
+.page{position:relative;z-index:10;background:var(--bg);min-height:var(--vh)}
+.stage{position:fixed;inset:0;z-index:1;pointer-events:none}
+.bounce{position:absolute;left:0;top:0;width:clamp(150px,19vw,280px);aspect-ratio:16/9;pointer-events:none;will-change:transform}
+.bounce-l{position:absolute;z-index:1;left:6px;bottom:5px;font-size:9px}
+
+/* index */
+.idx{position:relative;z-index:2;padding:calc(var(--m) + 62px) var(--m) calc(var(--m) + 30px)}
+.idx-list{font:600 var(--fl)/.94 var(--disp);letter-spacing:-.02em}
+.idx-list a{display:flex;justify-content:space-between;align-items:center;gap:var(--g)}
+.idx-list a span{display:inline-block;transition:transform .35s var(--ease);will-change:transform}
+@media (hover:hover){.idx-list a:hover span{transform:translateX(70px)}}
+.idx-list a:focus-visible span{transform:translateX(70px)}
+.idx-list em{flex-shrink:0;font:400 var(--fs)/1.3 var(--mono);letter-spacing:.03em;text-align:right;opacity:0;transition:opacity .2s}
+@media (hover:hover){.idx-list a:hover em{opacity:1}}
+.idx-list a:focus-visible em{opacity:1}
+
+/* project */
+.proj-wrap{position:relative;z-index:10;background:var(--bg)}
+.film{position:relative;height:var(--vh);cursor:pointer;overflow:hidden}
+.film + .film{margin-top:10px}
+.film h1{position:absolute;z-index:2;left:var(--m);bottom:var(--m);max-width:82%;pointer-events:none}
+.film-meta{position:absolute;right:var(--m);bottom:var(--m);z-index:2;pointer-events:none}
+.roll{padding:clamp(80px,16vh,180px) var(--m)}
+.roll h3{text-align:center;opacity:.5;margin-bottom:3em}
+.roll ul{line-height:1.9}
+.roll li{display:grid;grid-template-columns:1fr 1fr;gap:1.6em}
+.roll li span{text-align:right;opacity:.5}
+.roll li.full{display:block;text-align:center;padding-top:1.2em}
+.foot{padding:clamp(120px,26vh,280px) var(--m) var(--m);display:flex;justify-content:space-between;align-items:flex-end;gap:var(--g);background:var(--bg)}
+.foot-mail{font:600 var(--fx)/.8 var(--disp);letter-spacing:-.02em}
+.foot-r{flex-shrink:0;white-space:nowrap;text-align:right;line-height:1.5}
+
+/* info */
+.info{position:relative;z-index:2;min-height:var(--vh);display:flex;flex-direction:column;justify-content:space-between;gap:calc(var(--m)*4);padding:calc(var(--m) + 62px) var(--m) calc(var(--m) + 30px)}
+.info h1{max-width:10.5em}
+.info-cols{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:var(--g)}
+.info-cols section:nth-child(1){grid-column:1/5}
+.info-cols section:nth-child(2){grid-column:5/11}
+.info-cols h3{opacity:.6;margin-bottom:1em}
+.info-cols ul{display:flex;flex-direction:column;gap:.2em;font:600 var(--fm)/1 var(--disp);letter-spacing:-.01em}
+
+/* film overlay */
+.player{position:fixed;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:#000}
+.player.open{display:flex}
+.player .m{filter:blur(30px);opacity:.5;transform:scale(1.2)}
+.player-f{--ar:1.7778;position:relative;z-index:1;width:min(100vw - var(--m)*2 - 300px,(var(--vh) - 140px)*var(--ar));aspect-ratio:var(--ar);background:#000}
+.player-f iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.player-x{position:absolute;z-index:2;left:var(--m);top:50%;transform:translateY(-50%);color:#f1ece1}
+
+@media (max-width:900px){
+  .hdr{justify-content:space-between}
+  .hdr-name,.hdr-nav{width:auto}
+  .hdr-tc,#ig{display:none}
+  .home-desc .row{display:none}
+  .idx-list em{display:none}
+  .film{height:72vh}
+  .roll li{gap:1em}
+  .foot{flex-direction:column-reverse;justify-content:flex-start;align-items:flex-start;gap:10px}
+  .foot-r{text-align:left}
+  .bounce{width:46vw}
+  .info-cols{display:flex;flex-direction:column;gap:calc(var(--m)*2)}
+  .player-f{width:100vw}
+  .player-x{top:var(--m);transform:none}
+}
+@media (prefers-reduced-motion:reduce){
+  .shut i,.lb::before,.lb::after,.lb .m-s,.idx-list a span,.cur,.u{transition:none}
+}
+</style>
+</head>
+<body>
+
+<header class="hdr x">
+  <a class="hdr-name u" href="#/">Cas Velthuis</a>
+  <nav class="hdr-nav"><a class="u" data-r="index" href="#/index">Index</a><a class="u" data-r="info" href="#/info">Info</a></nav>
+  <span class="hdr-tc" aria-hidden="true">00:00:00:00</span>
+  <a class="u" id="ig" target="_blank" rel="noopener">Instagram</a>
+</header>
+
+<div class="player" id="player" role="dialog" aria-label="Film">
+  <div class="player-bg"></div>
+  <button class="player-x d" id="playerClose" data-cursor="Close">Close</button>
+  <div class="player-f"></div>
+</div>
+
+<main id="view"></main>
+
+<div class="cur" aria-hidden="true"></div>
+<div class="shut cover" aria-hidden="true"><i></i><i></i><p><span></span></p></div>
+
+<script>const DATA = {"site":{"name":"Cas Velthuis","tagline":"Amsterdam based freelance video editor","metaDescription":"Freelance video editor","metaKeywords":["freelance","video editor","amsterdam"],"email":"contact@casvelthuis.com","phone":"+31 6 39 27 82 54","instagram":"https://www.instagram.com/casvelt","location":"Amsterdam"},"projects":[{"order":1,"oldPath":"/thecrew","slug":"the-crew","title":"The Crew","navTitle":"DGTL & BUD - THE CREW","client":"Bud & DGTL Festival","productionCompany":"Underscore","director":"Cas Mulder","roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"8MckY5Enc2Z","width":3840,"height":2160}],"credits":["Written & directed by Cas Mulder","Production Company: Underscore","1st AD / Producer: Willem Beelaerts van Blokland","Productie assistent: Amantina Jean","Productie assistent: Jade Kloet","D.O.P.: Tjerk Muilwijk","1st AC: Boyd Bakema","Steadicam: Ab Gülten","Gaffer: Berend Holtkamp","Gaffer: Jan Nelemans","Best boy: Mees Blaak","Sound operator: Thijs Brands","Sound operator: Robin Kalsbeek","Art director: Julia van der Veen","Styling: Merel van Kesteren","Movement director: Charles Pas","MUAH: Magdalena Kielb","Runner: Sasha van der Schaaf","Editor: Cas Velthuis","Grading: Wietse van Bezooijen","Film development: Haghe Film","Sounddesign + audiomix: David Coehorst","Graphics: GURB","Team DGTL:","Tessa Ponjee","Thomas van Well Groeneveld","Cast:","Photographer: Thomas van Luin","Girl: Lara Roozemond","All the extra dancers","And all the lovely people from DGTL ADE"]},{"order":2,"oldPath":"/leaveamessage","slug":"leave-a-message","title":"Leave a Message","navTitle":"FREQUENCY - LEAVE A MESSAGE","client":"Frequency Music","productionCompany":"Underscore","director":"Joachim Spruijt","roles":["Editor","PA"],"videos":[{"host":"adobe-ccv","id":"5htofIPbuM6","width":1536,"height":1152}],"credits":["Directed by Joachim Spruijt","An Underscore production","Fueled by Frequency","Creative director: Joachim Spruijt","Co-creative director & Photography: Segraphy","Executive producer: Willem Beelaerts van Blokland","Executive producer: Itai Verhoeckx","Production manager & casting director: Kenneth Okorley","1st AD: Damien Hope","2nd AD: David Vis","DOP: Sami El Hassani","1st AC: Thijs Geenhuizen","Gaffer: Daan de Boer","Best girl: Maxime Pottuit","Electrician Simon Ruesink","Grip: Pim Brandsen","Art director: Meret Welmann","Art assistent: Anna Dekker","Decor builder: Simon Genovese","Decor builder: Amir Hanif","Hand probs: Ems Michels","Graphic design: Gurb","Styled by Studio Overlab (Marleen Ettema & Jan Hürxkens)","Stylist on set: Isabelle van Dortmont","Styling Assistant: Yvana Muradin","Styling Assistant: Evy Cornelie","HMU: Stephanie Ly","HMU assistent: Nana Telussa","Location manager: Sam Heijblom","Location scout: Allard van der Spek","PA: Cas Velthuis","PA: Amantina Jean","PA: Sasha van der Schaaf","PA: Sarah Soeterbroek","Catering: Levi’s Kitchen","Animal handler: Jip van Dalen","Edit: Cas Velthuis","Edit: Alex Pieterse","Edit: Joachim Spruijt","Edit: Willem Beelaerts van Blokland","VFX supervisor: Sem Leuven","Grading: Wietse van Bezooijen","Titel design: Sebastian Boon","Music Written, Arranged and Composed: Hemai and JNR Williams","Vocals performed: JNR Williams","Drums performed: Sam Hemus","Violin performed: Jed Bevington","Guitar, Bass, Keyboards and Percussion performed: Hemai","Produced: Hemai","Engineered, Mixed and Mastered: Hemai","Sounddesign: Zoé Beekes","Team Frequency:","Kelvin Ruijters","Cheryl Shahheidari","Quirijn Smits","Sarah Stam","Daan Spanjaardt"]},{"order":3,"oldPath":"/bordeelsluipers","slug":"bordeelsluipers","title":"Bordeelsluipers","navTitle":"MILOLAATHETLUKKEN - BORDEELSLUIPERS","client":"Milo Laat Het Lukken","productionCompany":"Underscore","director":"Jeroen Kooistra","roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"KGZRI97wids","width":4320,"height":2160}],"credits":["An Underscore production","Directed by Jeroen Kooistra","Producer: Willem Beelaerts van Blokland","DOP: Boyd Bakema","1st AC: Jan Roelfs","Gaffer: Mike de Jong","Art director: Merel van Kesteren","Special effects: Daniel Dekker","PA: Sasha van der Schaaf","Editor: Cas Velthuis","Grading: Luke Linssen","VFX: Sem Leuven","Titel design: Emile Almekinders","Cast:","Kayu LIn, Thije Wind, Levi Boyde, Jordan Yvel en Ciron Bakker."]},{"order":4,"oldPath":"/vcarb","slug":"vcarb-2025","title":"VCARB 2025","navTitle":"VCARB BRANDSHOOT 2025","client":"Visa Cash App Racing Bulls Formula One Team","productionCompany":"Magenta Films","director":"Roxanne Overeem","roles":["Editor","DIT"],"videos":[{"host":"adobe-ccv","id":"8NJRNs3WvhU","width":3840,"height":2160},{"host":"adobe-ccv","id":"Uho6_DI4RQY","width":3840,"height":2160}],"credits":["Production company: Magenta Films","Director: Roxanne Overeem","EP: Marc Bodeman","Lead Producer: Aleksandra Babic","DoP: Noah Kingmans","2nd cam: Geert Kolb","Gaffers: ernstjanthieme, Jordi Kooij","Producers: Kristina Markovic, Geertje Hadderingh","Production Assistent: Jelle Calis, Sanne Hulscher","Runner: Stephan Bodeman","AC: Lars Inhulsen","Sound: @_saukoo, Wouter van Opdorp","DIT’S: Kevin Ligtvoet, Cas Velthuis","BOLT Operator: Navid Tansaz","Light Team: Rudger Faber, patrick galvin, Jochem Vaag, Joey Marcoux, Martijn Schoeber","VFX Supervisor: Snezana Obradovic Milicevic","Camera Facilities: Camera Rentals Amsterdam","Editor: Cas Velthuis","Post Producer: Teun Luppes","DIGI: Henry Jackson","Light Assistents: George Read, Sam Jupp, Jack Sproston","Production Designer: Jaina Minton","Art Assistent: Austeja Gokaite"]},{"order":5,"oldPath":"/museumnacht","slug":"museumnacht-2025","title":"Museumnacht 2025","navTitle":"MUSEUMNACHT 2025","client":"Museumnacht Amsterdam","productionCompany":"Underscore","director":null,"roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"6KLe8b6iHaJ","width":3840,"height":2160}],"credits":["Production company: Underscore","Producer & creative: Willem Beelaerts van Blokland","Producer: Lin Deckers","Dop: Robin Ruitenberg","Additional camera: Tijl Bluijs","Edit: Cas Velthuis","Grading: Michel Blom"]},{"order":6,"oldPath":"/cominghome","slug":"coming-home","title":"Coming Home","navTitle":"PINKPOP - COMING HOME","client":"Pinkpop Festival","productionCompany":"Underscore","director":"Veras Fawaz","roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"HBR5U2g5UFU","width":1800,"height":1080}],"credits":["Directed by Veras Fawas","Production by Underscore","Producer: Willem Beelaerts van Blokland","DOP: Bart Hoveijn","1st AC: Boyd Bakema","2nd AC: Matthijs Los","Editor: Cas Velthuis","Colorist: Wietse van Bezooijen","Film scan: Onno Petersen","Sounddesign: Amplifeye","Titel design Veras Fawaz","Music by The Haunted Youth","Cast: Sofie Wortelboer, Kenor Ospina, Anne Harmsen, Keri de Smet, Kahraman Çinar, Nahuel Garcia, Martijn Geraerts en Tijmen Geraerts.","Special thanks: Nina van Leusden, Lotte Smits, Bart Slangen en Lyon Pol."]},{"order":7,"oldPath":"/ubermokum","slug":"uber-mokum","title":"Uber Mokum","navTitle":"UBER MOKUM","client":"Uber","productionCompany":"Buutvrij for Life & Liberate ’96","director":"Lee Plaschek","roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"EwzLLViNDLN","width":3840,"height":2160}],"credits":["Produced by: Buutvrij for Life & Liberate ’96","Head of production: Sophieke Gremmer","Director: Lee Plaschek","Line producer: Tijl Bluijs | Liberate ’96","Producer on set: Timo Shot","DOP: Remco Hogenboom","B-cam operator: Mathijs Los","Catering: Bohouse","Edit: Cas Velthuis","Grading: Brandon Gervacio | Liberate ’96","Voice over: Danny Froger"]},{"order":8,"oldPath":"/synergy","slug":"synergy","title":"Synergy","navTitle":"DGTL AMS 2024","client":"DGTL Festival","productionCompany":"Underscore","director":null,"roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"UumMLPZhy3G","width":3840,"height":2160}],"credits":["Production Company: Underscore","Producer: Willem Beelaerts van Blokland","Camera team:","Tijl Bluijs","Matthijs Los","Nino Kennis","Remco Hoogeboom","Noud Wellink","Kolya Tirado","Pasindu Goldmann","Lukas Grenzhäuser","Jim Hofacker","Kenneth Vos","Machlon Hurulean","Mark Zandvoort","Editor: Cas Velthuis","Grading: Koert van der Ploeg"]},{"order":9,"oldPath":"/limonade","slug":"limonade","title":"Limonade","navTitle":"KARVAN CÉVITAM & FABERYAYO - LIMONADE","client":"Karvan Cévitam","productionCompany":"Underscore & Wink","director":"Luka Boerrigter","roles":["Editor","PA"],"videos":[{"host":"adobe-ccv","id":"39ZGabKWbp2","width":3840,"height":2160}],"credits":["Cliënt: Karvan Cévitam","Production company: Underscore","Agency: WINK","Director: Luka Boerrigter","Executive producer: Willem Beelaerts van Blokland 1st AD: Willem Beelaerts van Blokland","Producer: Rox Patawala","Technisch producer: Matthijs Los","Producer Wink: Anouk Diemel","Creative Wink: Nana Prins","Creative Wink: Gijs van Willigen","DOP: Bart Hoveijn","1st AC: Christiaan van Dijk","Gaffer: Wiegert de Vries","Best boy: Wesley Mulder","Art director: Nina van Haren","Art assistentie: Louana Tummers","Styling: Leila El Alaoui","Styling assistentie: Eleftheria Lavdaki","MUA: Melanie Foeh","PA: Cas Velthuis","PA: Lucas Buitenhuis","Location: Grace Locations","Rental: Cinesupply","Editor: Cas Velthuis","Edit assistentie: Remco Hoogenboom","Colorgrading: Koert van der Ploeg"]},{"order":10,"oldPath":"/unbubble","slug":"unbubble","title":"Unbubble","navTitle":"STEDELIJK MUSEUM AMSTERDAM - UNBUBBLE","client":"Stedelijk Museum Amsterdam","productionCompany":"Underscore","director":"Veras Fawaz","roles":["Editor"],"videos":[{"host":"adobe-ccv","id":"SN9LEfwV_wu","width":3840,"height":2304}],"credits":["Director: Veras Fawaz","Production company: Underscore","Creation: Carsten van Berkel, Stefan Leendertse","Producer: Chantal Ebbinge","Brand positioning: Rein Wolfs, Darija Kalkan, Charl Landvreugd, Amanda Pinatih, Corinne Genestay","Team Stedelijk: Darija Kalkan, Fiorenza de Heer, Rahman Çelik, Merel de Zeeuw, Justin Hahury, Marie-José Raven, Maaike te Kulve, Lois Barendse, Eva Heisterkamp","Executive producer & 1st AD: Willem Beelaerts van Blokland","Producer: Dominique Garritsen","DOP: Sami El Hassani","1st AC: Casper Fraij","Gaffer: Jeroen Zwart","Electrician: Nils Håkansson","Electrician: Ciro Naastepad","Key grip: Jelle van der Weiden","Crane Technician: Noah Campos","Production Designer: Desiree Brands","Builder: Danny Gelders","Builder: Isa Soares","Builder: Rein Kaandorp","Builder: Floor van der Krol","Set Painter: Rein Kaandorp","Set Painter: Isa Soares","Special props: Iri Pauwels","Set dresser: Nina van Haren","Assistant Set dresser: Floor van der Krol","Art assistant: Louana Tummers","Art assistant: Naomi van den Tillart","Art assistant: Shenna Weijers","Styling: Carolijn Hooij","Styling assistant: Andrea Blättler","MUA: Stephanie Ly","Production assistant: Rosita Safakisch","Runner: Lonneke Wijnschenk","Editor: Cas Velthuis","VFX supervisor: Sem Leuven","Colour grader: Wietse van Bezooijen – de Grot","Sound design & audio mix: Amplifeye","Voice Over: Zoë Smith","Composer, Producer: Cas Erkeland","Composer, Arranger: Patrick van der Sluis","Trumpeter: Koen Smits","Cast: Cherella, Dionne, Nathalie, Max, Russell","Catering: De Gouden Gieter","BTS photograpy: Katariina Kärki","Visual identity: Armand Mevis, So-Yeon Kim, Michiel Terpelle, Theetat Thunkijjanukij","Web design: GRRR"]}]}, LOCAL = true;</script>
+<script>
+(() => {
+  const S = DATA.site, P = DATA.projects;
+
+  // Stills are hot-linked from the current site's covers (1280px for lists, 1920px for large use).
+  const CDN = 'https://cdn.myportfolio.com/448029b8-d96a-42c9-8989-cbb4662f62cc/';
+  const IMG = {
+    '/thecrew': ['5c0b86a4-781f-406e-81af-9c3b151fde4a_rwc_0x69x3840x3072x1280.png?h=74052f0e80b9376592762cbe947c9983', '5c0b86a4-781f-406e-81af-9c3b151fde4a_rwc_0x69x3840x3072x1920.png?h=b2c893574ceaa54ddd25a89fbc7dc499'],
+    '/leaveamessage': ['9891909e-6680-492e-9bc5-f3f59ed10138_rwc_0x34x1920x1536x1280.png?h=04abee8976846ffef96a01a006c10792', '9891909e-6680-492e-9bc5-f3f59ed10138_rwc_0x34x1920x1536x1920.png?h=53e4bd8992e597f58ee753f514a32a89'],
+    '/bordeelsluipers': ['9f0099fc-b5b8-4359-aa67-de47d33cb1ea_rwc_0x69x3840x3072x1280.png?h=7bd29ccdbaffd08e70a3ff558de72ac2', '9f0099fc-b5b8-4359-aa67-de47d33cb1ea_rwc_0x69x3840x3072x1920.png?h=b58423996080ee915567e179043ae1ac'],
+    '/vcarb': ['3586cb63-202a-4ccd-b856-45b8fd5ab549_rwc_0x69x3840x3072x1280.png?h=4a3748c83d0d258e2975c8e99ce53cc1', '3586cb63-202a-4ccd-b856-45b8fd5ab549_rwc_0x69x3840x3072x1920.png?h=87712b6375f93855571c98106c1506d6'],
+    '/museumnacht': ['c395310b-be02-48a4-ae33-2a105e784986_rwc_0x69x3840x3072x1280.png?h=36ea8b52f83d2284c77187bcfc33dc9b', 'c395310b-be02-48a4-ae33-2a105e784986_rwc_0x69x3840x3072x1920.png?h=6d65f4fefd78d00b7e5e0e3d4729f107'],
+    '/cominghome': ['fb2c31f5-b30c-4ba3-8d61-ba0bb7e53b04_rwc_0x34x1920x1536x1280.png?h=05515c06b283a659ad9a9b402bb98416', 'fb2c31f5-b30c-4ba3-8d61-ba0bb7e53b04_rwc_0x34x1920x1536x1920.png?h=733396d05b861344564ddcb0619ef92b'],
+    '/ubermokum': ['512443cf-c9b6-46b0-8bb3-e9a4f0b9030b_rwc_0x34x1920x1536x1280.png?h=9fb8242023b356d7ac72c8c36cd01e0f', '512443cf-c9b6-46b0-8bb3-e9a4f0b9030b_rwc_0x34x1920x1536x1920.png?h=0de71e017e1c20866e9a2b404ec7c5b7'],
+    '/synergy': ['51615473-e172-47ad-aa45-a46749a11486_rwc_0x69x3840x3072x1280.png?h=d1cc9a2ddc33813a25ce555cac1b0ad3', '51615473-e172-47ad-aa45-a46749a11486_rwc_0x69x3840x3072x1920.png?h=0d949b51181718dff94419036abeea81'],
+    '/limonade': ['93985193-918d-4c07-8b72-b2f29429535e_rwc_0x34x1920x1536x1280.png?h=f8082880f9bef2fb947398237a08a277', '93985193-918d-4c07-8b72-b2f29429535e_rwc_0x34x1920x1536x1920.png?h=42323499c069669550e579c781808675'],
+    '/unbubble': ['c225338a-b255-40dc-a7ca-a8454b8ba00b_rwc_0x69x3840x3072x1280.png?h=7cdad8de60bfca0814c1a1d63056fbb9', 'c225338a-b255-40dc-a7ca-a8454b8ba00b_rwc_0x69x3840x3072x1920.png?h=f31ae9e5fc6701e2e70c136ece92effe'],
+  };
+  // The hosted build ships its own stills in stills/, already cropped to the 16:9 frame.
+  P.forEach(p => { p.sm = LOCAL ? `stills/${p.slug}.jpg` : CDN + IMG[p.oldPath][0]; p.lg = LOCAL ? p.sm : CDN + IMG[p.oldPath][1]; });
+  if (LOCAL) document.documentElement.classList.add('local');
+
+  const $ = (s, r = document) => r.querySelector(s);
+  const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const pad = n => String(n).padStart(2, '0');
+  const isMobile = () => matchMedia('(max-width:900px)').matches;
+  const reduced = matchMedia('(prefers-reduced-motion:reduce)').matches;
+  const root = document.documentElement;
+  const view = $('#view'), shut = $('.shut'), player = $('#player'), cur = $('.cur');
+  const lock = on => root.classList.toggle('lock', on);
+  let drag = null;
+
+  const still = (p, big, style = '') =>
+    `<div class="m"><div class="m-s" style="${style}"><img src="${big ? p.lg : p.sm}" alt="" draggable="false"></div></div>`;
+
+  // Deterministic pseudo-random crop of a still, used as the poster for a project's second film until real posters exist.
+  const crop = n => {
+    const r = k => { const v = Math.sin(n * 12.9898 + k * 78.233) * 43758.5453; return v - Math.floor(v); };
+    const z = 1.5 + r(1) * 1.2, lim = (z - 1) / 2 * 90;
+    return `--z:${z.toFixed(2)};--px:${((r(2) * 2 - 1) * lim).toFixed(1)}%;--py:${((r(3) * 2 - 1) * lim).toFixed(1)}%`;
+  };
+
+  const contact = [
+    `<a class="u" href="mailto:${S.email}">${S.email}</a>`,
+    `<a class="u" href="tel:${S.phone.replace(/\s/g, '')}">${esc(S.phone)}</a>`,
+  ];
+
+  // Infinite vertical carousel: cards are absolutely positioned and wrapped around a virtual track.
+  // Scrolling is free: the track eases toward a target and never snaps.
+  class Carousel {
+    constructor(el, itemH) {
+      this.el = el; this.cards = $$('.card', el); this.itemH = itemH; this.t = this.c = 0;
+      this.resize(); this.draw(true);
+    }
+    resize() {
+      this.H = this.el.clientHeight; this.h = this.itemH(); this.total = this.h * this.cards.length;
+      this.off = (this.H - this.h) / 2;
+      this.cards.forEach(c => c.style.height = this.h + 'px');
+    }
+    add(d) { this.t += d; }
+    get index() { const n = this.cards.length; return (Math.round(this.c / this.h) % n + n) % n; }
+    goTo(i) {
+      const n = this.cards.length, d = ((i - this.index + n / 2) % n + n) % n - n / 2;
+      this.t = (Math.round(this.c / this.h) + d) * this.h;
+    }
+    draw(force) {
+      const d = this.t - this.c;
+      if (!force && Math.abs(d) < .05) return;
+      this.c += force || reduced ? d : d * .09;
+      const { h, H, total, off } = this;
+      this.cards.forEach((c, i) => {
+        let y = ((i * h - this.c) % total + total) % total;
+        if (y > total - h * 1.5) y -= total;
+        y += off;
+        const vis = y < H && y + h > 0;
+        c.style.visibility = vis ? '' : 'hidden';
+        c.style.transform = `translate3d(0,${y}px,0)`;
+        if (vis) c.firstElementChild.firstElementChild.style.setProperty('--py', (-(y + h / 2 - H / 2) / (H / 2 + h / 2) * h * .085) + 'px');
+      });
+    }
+  }
+
+  // Shared bounce physics: `el` travels around `box` at a constant speed and reflects off the edges.
+  // onHit() fires on every edge hit.
+  const bounce = (box, el, onHit) => {
+    let x = innerWidth * .5, y = 110, vx = 150, vy = 105, last = performance.now();
+    el.style.transform = `translate3d(${x}px,${y}px,0)`;
+    return now => {
+      const dt = Math.min(.05, (now - last) / 1000); last = now;
+      if (reduced) return;
+      const W = box.clientWidth - el.offsetWidth, H = box.clientHeight - el.offsetHeight;
+      x += vx * dt; y += vy * dt;
+      const hx = x <= 0 || x >= W, hy = y <= 0 || y >= H;
+      if (hx) { vx = x <= 0 ? Math.abs(vx) : -Math.abs(vx); x = Math.max(0, Math.min(W, x)); }
+      if (hy) { vy = y <= 0 ? Math.abs(vy) : -Math.abs(vy); y = Math.max(0, Math.min(H, y)); }
+      if (hx || hy) onHit();
+      el.style.transform = `translate3d(${x}px,${y}px,0)`;
+    };
+  };
+
+  // Film tile (Index, Info): cuts to the next film on every hit.
+  // hold(i) pins it to one film while a title is hovered; release() lets it cycle again.
+  const bouncer = (box, el) => {
+    const img = $('img', el), lab = $('.bounce-l', el);
+    let k = -1, held = false;
+    const show = i => { if (i === k) return; k = i; img.src = P[i].sm; lab.textContent = P[i].title; };
+    show(0);
+    return { step: bounce(box, el, () => { if (!held) show((k + 1) % P.length); }), hold(i) { held = true; show(i); }, release() { held = false; } };
+  };
+  const tile = `<div class="bounce">${still(P[0])}<span class="bounce-l x"></span></div>`;
+
+  const PAGES = {
+    home() {
+      const desc = `<p class="d">${esc(S.tagline)}</p><p class="row">${contact.join('')}</p>`;
+      if (isMobile()) {
+        // Phones get full-height frames in normal scroll with a pinned title.
+        lock(false);
+        view.innerHTML = `<div class="stack">${P.map(p => `<a class="stack-card" href="#/works/${p.slug}" data-t="${esc(p.title)}">${still(p)}</a>`).join('')}</div><p class="pin d x"></p><div class="home-desc fixed x">${desc}</div>`;
+        const pin = $('.pin'), cards = $$('.stack-card');
+        const upd = () => { pin.textContent = cards[Math.max(0, Math.min(cards.length - 1, Math.round(scrollY / innerHeight) || 0))].dataset.t; };
+        addEventListener('scroll', upd, { passive: true }); upd();
+        return { destroy() { removeEventListener('scroll', upd); } };
+      }
+      lock(true);
+      const reel = [...P.slice(3), ...P.slice(0, 3)];
+      view.innerHTML =
+        `<div class="home"><div class="home-top"><div class="hero">${reel.map(p => still(p)).join('')}<span class="hero-l x">Reel</span></div>` +
+        `<div class="car" data-cursor="View">${P.map(p =>
+          `<a class="card lb" href="#/works/${p.slug}" draggable="false">${still(p)}<p class="card-t x"><i>${esc(p.client)}</i><span class="d">${esc(p.title)}</span></p></a>`).join('')}</div></div>` +
+        `<div class="home-desc">${desc}</div></div>`;
+      const el = $('.car'), frames = $$('.hero .m'), beat = [3200, 1800, 1800, 1200, 1200, 3200, 1800, 1200, 1200, 1800];
+      let i = 0, timer;
+      frames[0].classList.add('on');
+      // The left side stays put and cuts between stills on an uneven beat, standing in for the showreel.
+      const cut = () => { frames[i].classList.remove('on'); i = (i + 1) % frames.length; frames[i].classList.add('on'); timer = setTimeout(cut, beat[i % beat.length]); };
+      if (!reduced) timer = setTimeout(cut, beat[0]);
+      return { cars: [new Carousel(el, () => el.clientHeight)], destroy() { clearTimeout(timer); } };
+    },
+
+    index() {
+      lock(false);
+      view.innerHTML =
+        `<div class="page"><div class="stage">${tile}</div><div class="idx x"><ol class="idx-list">${P.map((p, i) =>
+          `<li><a href="#/works/${p.slug}" data-i="${i}"><span>${esc(p.title)}</span><em>${esc(p.client)} / ${esc(p.productionCompany)}</em></a></li>`).join('')}</ol></div></div>`;
+      const list = $('.idx-list'), links = $$('a', list);
+      const b = bouncer($('.stage'), $('.bounce'));
+      // Hover is all CSS: the title indents inside its full-width row and that row's own client line fades in.
+      // Nothing is repositioned from script, so nothing can jump. Script only tells the tile which film to show.
+      const on = a => b.hold(+a.dataset.i);
+      links.forEach(a => { a.addEventListener('mouseenter', () => on(a)); a.addEventListener('focus', () => on(a)); a.addEventListener('blur', b.release); });
+      list.addEventListener('mouseleave', b.release);
+      return { frame: b.step };
+    },
+
+    project({ p }) {
+      lock(false);
+      const n = p.videos.length;
+      const films = p.videos.map((v, k) =>
+        `<div class="film" data-cursor="Play" data-v="${v.id}">${still(p, true, k ? crop(k + 40) : '')}${k ? '' : `<h1 class="xl x">${esc(p.title)}</h1>`}<span class="film-meta x">${n > 1 ? `Film ${k + 1}/${n}, ` : ''}Play film</span></div>`).join('');
+      const roll = p.credits.map(l => {
+        const k = l.indexOf(': ');
+        return k > 0 && k < 60 ? `<li><span>${esc(l.slice(0, k))}</span><em>${esc(l.slice(k + 2))}</em></li>` : `<li class="full">${esc(l)}</li>`;
+      }).join('');
+      view.innerHTML =
+        `<section class="proj"><div class="proj-wrap">${films}` +
+        `<div class="roll"><h3>Credits</h3><ul>${roll}</ul></div></div>` +
+        `<footer class="foot"><a class="foot-mail" href="mailto:${S.email}">${S.email}</a><p class="foot-r">${esc(S.phone)}<br>Based in ${esc(S.location)}</p></footer></section>`;
+      $$('[data-v]').forEach(el => el.addEventListener('click', () => openPlayer(p, el.dataset.v)));
+    },
+
+    info() {
+      lock(false);
+      const uniq = a => [...new Set(a)];
+      const clients = uniq(P.flatMap(p => p.client.replace(' Formula One Team', '').replace(/ (Festival|Music)$/, '').split(' & ')));
+      const li = a => a.map(v => `<li>${v}</li>`).join('');
+      view.innerHTML =
+        `<div class="page"><div class="stage">${tile}</div><div class="info x">` +
+        `<h1 class="xl">${esc(S.tagline)}</h1>` +
+        `<div class="info-cols"><section><h3>Contact</h3><ul>${li([...contact, `<a class="u" href="${S.instagram}" target="_blank" rel="noopener">Instagram</a>`])}</ul></section>` +
+        `<section><h3>Clients</h3><ul>${li(clients.map(esc))}</ul></section></div></div></div>`;
+      return { frame: bouncer($('.stage'), $('.bounce')).step };
+    },
+  };
+
+  // ---- routing, with the letterbox closing and opening between pages ----
+  let page = {}, nav = 0, first = true, wasMobile = isMobile();
+  let path = location.hash.replace(/^#/, '') || '/';
+  const route = () => {
+    const h = path;
+    const m = h.match(/^\/works\/([\w-]+)/), p = m && P.find(q => q.slug === m[1]);
+    return p ? { name: 'project', p } : h === '/index' || h === '/works' ? { name: 'index' } : h === '/info' || h === '/about' ? { name: 'info' } : { name: 'home' };
+  };
+  const mount = r => {
+    page.destroy && page.destroy();
+    page = PAGES[r.name](r) || {};
+    scrollTo(0, 0);
+    $$('.hdr-nav a').forEach(a => a.classList.toggle('on', a.dataset.r === r.name));
+    document.title = (r.p ? r.p.title + ' — ' : '') + S.name;
+  };
+  const go = async () => {
+    const id = ++nav, r = route();
+    closePlayer(); cur.classList.remove('on');
+    $('span', shut).textContent = r.p ? r.p.title : r.name === 'index' ? 'Index' : r.name === 'info' ? 'Info' : S.name;
+    if (first) await Promise.race([document.fonts ? document.fonts.ready : wait(0), wait(1500)]);
+    else { shut.classList.add('cover'); await wait(reduced ? 0 : 640); }
+    if (id !== nav) return;
+    mount(r);
+    const lead = $('.film img, .hero .on img, .stack img');
+    await Promise.race([lead && lead.decode ? lead.decode().catch(() => {}) : wait(0), wait(2500)]);
+    await wait(first ? 450 : 120);
+    if (id !== nav) return;
+    shut.classList.remove('cover');
+    first = false;
+  };
+  document.addEventListener('click', e => {
+    const a = e.target.closest && e.target.closest('a[href^="#/"]');
+    if (!a || e.defaultPrevented || e.metaKey || e.ctrlKey) return;
+    e.preventDefault();
+    const to = a.getAttribute('href').slice(1);
+    if (to === path) return;
+    path = to;
+    try { history.pushState(null, '', '#' + to); } catch (err) {}
+    go();
+  });
+  addEventListener('popstate', () => { path = location.hash.replace(/^#/, '') || '/'; go(); });
+  addEventListener('resize', () => {
+    if (isMobile() !== wasMobile) { wasMobile = isMobile(); mount(route()); return; }
+    page.cars && page.cars.forEach(c => { c.resize(); c.draw(true); });
+  });
+
+  // ---- carousel input ----
+  const busy = () => player.classList.contains('open');
+  addEventListener('wheel', e => {
+    if (!page.cars || busy()) return;
+    const d = e.deltaY * (e.deltaMode === 1 ? 32 : 1);
+    page.cars.forEach(c => c.add(d));
+  }, { passive: true });
+  addEventListener('keydown', e => {
+    if (e.key === 'Escape') closePlayer();
+    if (!page.cars || busy()) return;
+    const d = { ArrowDown: 1, PageDown: 1, ArrowUp: -1, PageUp: -1 }[e.key];
+    if (d) page.cars.forEach(c => c.goTo(c.index + d));
+  });
+  addEventListener('pointerdown', e => { if (page.cars && e.target.closest('.car')) drag = { y: e.clientY, moved: 0 }; });
+  addEventListener('pointermove', e => {
+    if (!drag) return;
+    const dy = e.clientY - drag.y; drag.y = e.clientY; drag.moved += Math.abs(dy);
+    page.cars && page.cars.forEach(c => c.add(-dy * 1.6));
+  });
+  addEventListener('pointerup', () => { if (drag) { const d = drag; setTimeout(() => { if (drag === d) drag = null; }); } });
+  addEventListener('click', e => { if (drag && drag.moved > 6 && e.target.closest('.car')) e.preventDefault(); }, true);
+
+  // ---- film overlay (uses the current site's player until the films are rehosted) ----
+  const frameBox = $('.player-f'), playerBg = $('.player-bg');
+  function openPlayer(p, id) {
+    const v = p.videos.find(q => q.id === id);
+    frameBox.style.setProperty('--ar', (v.width / v.height).toFixed(4));
+    playerBg.innerHTML = still(p);
+    frameBox.innerHTML = `<iframe title="${esc(p.title)}" allow="autoplay; fullscreen" allowfullscreen src="https://www-ccv.adobe.io/v1/player/ccv/${id}/embed?bgcolor=%23000000&lazyLoading=true&api_key=BehancePro2View"></iframe>`;
+    player.classList.add('open');
+    root.style.overflow = 'hidden';
+  }
+  function closePlayer() { player.classList.remove('open'); frameBox.innerHTML = ''; root.style.overflow = ''; }
+  $('#playerClose').addEventListener('click', closePlayer);
+  player.addEventListener('click', e => { if (e.target === player) closePlayer(); });
+
+  // ---- cursor label ----
+  let mx = -100, my = -100, cx = -100, cy = -100;
+  addEventListener('mousemove', e => {
+    mx = e.clientX; my = e.clientY;
+    const t = e.target.closest && e.target.closest('[data-cursor]');
+    if (t) cur.textContent = t.dataset.cursor;
+    cur.classList.toggle('on', !!t);
+  });
+
+  $('#ig').href = S.instagram;
+
+  // ---- frame loop: carousel, tile, cursor and a running timecode at 25 fps ----
+  const tc = $('.hdr-tc');
+  const loop = now => {
+    page.cars && page.cars.forEach(c => c.draw());
+    page.frame && page.frame(now);
+    cx += (mx - cx) * .2; cy += (my - cy) * .2;
+    cur.style.transform = `translate3d(${cx + 14}px,${cy + 14}px,0)`;
+    const d = new Date();
+    tc.textContent = `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}:${pad(Math.floor(d.getMilliseconds() / 40))}`;
+    requestAnimationFrame(loop);
+  };
+  requestAnimationFrame(loop);
+
+  go();
+})();
+</script>
+</body>
+</html>
